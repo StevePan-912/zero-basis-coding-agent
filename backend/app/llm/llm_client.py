@@ -92,6 +92,7 @@ class LLMClient:
         message: str,
         system_prompt: Optional[str] = None,
         conversation_history: Optional[List[Dict[str, str]]] = None,
+        mock: bool = False,
         **kwargs
     ) -> str:
         """
@@ -101,13 +102,14 @@ class LLMClient:
             message: User message
             system_prompt: Optional system prompt
             conversation_history: Optional list of previous messages
+            mock: If True, returns mock response without API call
             **kwargs: Additional arguments for the invoke call
 
         Returns:
             LLM response as string
         """
-        if self.mock_mode:
-            return self.MOCK_RESPONSE
+        if mock or self.mock_mode:
+            return f"Mock response for: {message}"
 
         # Build messages list
         messages = []
@@ -130,6 +132,19 @@ class LLMClient:
         if hasattr(response, 'content'):
             return response.content
         return str(response)
+
+    def stream(self, prompt: str):
+        """
+        Stream the LLM response.
+
+        Args:
+            prompt: User prompt
+
+        Returns:
+            Streaming response (not implemented yet)
+        """
+        # 稍后实现
+        raise NotImplementedError("Stream mode not implemented yet")
 
     def get_client(self):
         """Get the underlying LangChain client."""

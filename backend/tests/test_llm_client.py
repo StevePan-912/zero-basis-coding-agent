@@ -65,7 +65,22 @@ class TestLLMClient:
         response = client.invoke('Hello')
 
         assert response is not None
-        assert 'mock' in response.lower() or response == 'MOCK_RESPONSE'
+        assert 'Mock response' in response or 'mock' in response.lower()
+
+    def test_invoke_with_mock_parameter(self):
+        """Test invoke method with mock parameter overrides mock_mode."""
+        client = LLMClient(provider='claude', api_key='test-key', mock_mode=False)
+        # Even with mock_mode=False, mock=True should return mock response
+        response = client.invoke('Hello', mock=True)
+
+        assert response is not None
+        assert 'Mock response' in response
+
+    def test_stream_raises_not_implemented(self):
+        """Test that stream method raises NotImplementedError."""
+        client = LLMClient(provider='claude', api_key='test-key', mock_mode=True)
+        with pytest.raises(NotImplementedError, match="Stream mode not implemented"):
+            client.stream('Hello')
 
     def test_invoke_with_system_prompt(self):
         """Test invoke method with system prompt."""
@@ -215,3 +230,29 @@ class TestLLMOptimizer:
         assert messages is not None
         assert isinstance(messages, list)
         assert len(messages) == 2  # System + user message
+
+    def test_optimize_prompt(self):
+        """Test optimize_prompt adds caching control."""
+        optimizer = LLMOptimizer()
+        prompt = "Hello, this is a test prompt."
+        optimized = optimizer.optimize_prompt(prompt)
+
+        assert 'cache-control' in optimized.lower()
+        assert 'ephemeral' in optimized.lower()
+        assert prompt in optimized
+
+    def test_compress_prompt(self):
+        """Test compress_prompt truncates long prompts."""
+        optimizer = LLMOptimizer()
+        long_prompt = "Line 1\nLine 2\nLine 3\nLine 4\nLine 5\n"
+        compressed = optimizer.compress_prompt(long_prompt, max_length=20)
+
+        assert len(compressed) <= 20
+
+    def test_compress_prompt_no_change_needed(self):
+        """Test that short prompts are not modified by compress_prompt."""
+        optimizer = LLMOptimizer()
+        short_prompt = "This is short."
+        compressed = optimizer.compress_prompt(short_prompt, max_length=100)
+
+        assert compressed == short_prompt

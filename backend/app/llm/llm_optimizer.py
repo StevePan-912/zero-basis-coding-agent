@@ -141,6 +141,24 @@ Your goal is to deliver solutions that meet professional standards."""
 
         return self.SYSTEM_PROMPT_TEMPLATES[mode_lower][difficulty_lower]
 
+    def optimize_prompt(self, prompt: str) -> str:
+        """
+        Optimize prompt to reduce API call costs.
+
+        Adds Claude prompt caching control markers.
+
+        Args:
+            prompt: The prompt to optimize
+
+        Returns:
+            Optimized prompt with caching control markers
+        """
+        # Add cache control marker for Claude API
+        optimized_prompt = f"""<!-- cache-control: {{"type": "ephemeral"}} -->
+{prompt}
+"""
+        return optimized_prompt
+
     def optimize_prompt_length(
         self,
         prompt: str,
@@ -166,6 +184,30 @@ Your goal is to deliver solutions that meet professional standards."""
         # Truncate and add suffix
         truncated_length = max_len - len(truncation_suffix)
         return prompt[:truncated_length] + truncation_suffix
+
+    def compress_prompt(self, prompt: str, max_length: int = 4000) -> str:
+        """
+        Compress prompt length.
+
+        Args:
+            prompt: The prompt to compress
+            max_length: Maximum allowed length
+
+        Returns:
+            Compressed prompt string
+        """
+        if len(prompt) <= max_length:
+            return prompt
+
+        lines = prompt.split('\n')
+        compressed_lines = []
+
+        for line in lines:
+            if len('\n'.join(compressed_lines)) + len(line) > max_length:
+                break
+            compressed_lines.append(line)
+
+        return '\n'.join(compressed_lines)
 
     def add_caching_control(
         self,
