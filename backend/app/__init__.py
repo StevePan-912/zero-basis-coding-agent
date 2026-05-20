@@ -17,8 +17,8 @@ def create_app():
     # 初始化JWT
     jwt = JWTManager(app)
 
-    # 注册路由（稍后添加）
-    # from app.routes import register_routes
-    # register_routes(app)
+    # 注册路由
+    from app.routes import register_routes
+    register_routes(app)
 
     return app
