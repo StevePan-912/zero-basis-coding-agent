@@ -79,7 +79,8 @@ function ChatPage() {
       {/* Header */}
       <header className="chat-header">
         <div className="chat-header-title">
-          <h1>零基础编程助手</h1>
+          <h1>ZerGO Coding Agent</h1>
+          <span className="chat-header-subtitle">零基础编程学习助手</span>
         </div>
         <button
           type="button"

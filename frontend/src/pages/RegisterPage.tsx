@@ -32,7 +32,7 @@ function RegisterPage() {
   return (
     <div className="auth-page">
       <header className="auth-page-header">
-        <h1>零基础编程助手</h1>
+        <h1>ZerGO Coding Agent</h1>
         <p>创建账号，开启编程学习之旅</p>
       </header>
       <main className="auth-page-main">

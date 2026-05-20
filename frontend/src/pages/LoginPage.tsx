@@ -32,8 +32,8 @@ function LoginPage() {
   return (
     <div className="auth-page">
       <header className="auth-page-header">
-        <h1>零基础编程助手</h1>
-        <p>登录开始你的编程学习之旅</p>
+        <h1>ZerGO Coding Agent</h1>
+        <p>从零基础出发，即刻开始编程之旅</p>
       </header>
       <main className="auth-page-main">
         <AuthForm

@@ -1,8 +1,9 @@
 {
-  "name": "zero-basis-coding-agent-frontend",
+  "name": "zergo-coding-agent-frontend",
   "private": true,
-  "version": "0.1.0",
-  "type": "module",
+  "version": "1.0.0",
+  "description": "ZerGO Coding Agent Frontend - 零基础编程学习助手",
+  "author": "StevePan",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",

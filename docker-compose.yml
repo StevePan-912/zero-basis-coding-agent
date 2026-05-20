@@ -1,4 +1,4 @@
-# Docker Compose configuration for zero-basis-coding-agent
+# Docker Compose configuration for ZerGO Coding Agent
 # Production-ready multi-container setup
 
 version: '3.8'
@@ -7,18 +7,18 @@ services:
   # PostgreSQL Database
   postgres:
     image: postgres:15-alpine
-    container_name: coding-agent-postgres
+    container_name: zergo-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_USER: ${DB_USER:-coding_agent}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-coding_agent_password}
-      POSTGRES_DB: ${DB_NAME:-coding_agent_db}
+      POSTGRES_USER: ${DB_USER:-zergo}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-zergo_password}
+      POSTGRES_DB: ${DB_NAME:-zergo_db}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-coding_agent} -d ${DB_NAME:-coding_agent_db}"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-zergo} -d ${DB_NAME:-zergo_db}"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -29,7 +29,7 @@ services:
   # Redis Cache
   redis:
     image: redis:7-alpine
-    container_name: coding-agent-redis
+    container_name: zergo-redis
     restart: unless-stopped
     command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
     volumes:
@@ -50,11 +50,11 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: coding-agent-backend
+    container_name: zergo-backend
     restart: unless-stopped
     environment:
       # Database Configuration
-      DATABASE_URL: postgresql://${DB_USER:-coding_agent}:${DB_PASSWORD:-coding_agent_password}@postgres:5432/${DB_NAME:-coding_agent_db}
+      DATABASE_URL: postgresql://${DB_USER:-zergo}:${DB_PASSWORD:-zergo_password}@postgres:5432/${DB_NAME:-zergo_db}
       REDIS_URL: redis://redis:6379/0
       # LLM API Keys
       CLAUDE_API_KEY: ${CLAUDE_API_KEY}
@@ -93,7 +93,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: coding-agent-frontend
+    container_name: zergo-frontend
     restart: unless-stopped
     depends_on:
       backend:

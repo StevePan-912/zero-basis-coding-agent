@@ -1,12 +1,16 @@
-# 零基础编程Agent
+# ZerGO Coding Agent
 
-零基础编程Agent - 双模式智能编程学习和开发系统，帮助完全零基础的初学者学习编程概念并完成实际代码开发任务。
+ZerGO Coding Agent - 双模式智能编程学习和开发系统，帮助完全零基础的初学者学习编程概念并完成实际代码开发任务。
 
 ## 项目简介
 
 ### 核心定位
 
-帮助完全零基础的初学者学习编程概念并完成实际代码开发任务的双模式智能Agent系统。
+ZerGO Coding Agent 是帮助完全零基础的初学者学习编程概念并完成实际代码开发任务的双模式智能Agent系统。
+
+### 品牌理念
+
+**ZerGO** = **Zero** + **GO**，寓意"从零基础出发，即刻开始编程之旅"
 
 ### 目标用户
 
@@ -55,7 +59,7 @@
 ## 项目结构
 
 ```
-zero-basis-coding-agent/
+zergo-coding-agent/
 ├── backend/                    # 后端代码
 │   ├── app/                    # 应用核心
 │   │   ├── adapters/           # 难度适配器和Prompt构建器
@@ -163,7 +167,7 @@ zero-basis-coding-agent/
 
 ```bash
 git clone <repository-url>
-cd zero-basis-coding-agent
+cd zergo-coding-agent
 ```
 
 #### 2. 后端设置
