@@ -104,6 +104,27 @@ class AuthService:
         if '@' not in email or '.' not in email:
             return False, "Invalid email format"
 
+        # Additional email format validation
+        # Email should have proper structure: local-part@domain.tld
+        parts = email.split('@')
+        if len(parts) != 2:
+            return False, "Invalid email format"
+
+        local_part, domain = parts
+        if not local_part or not domain:
+            return False, "Invalid email format"
+
+        # Domain should contain at least one dot and valid characters
+        domain_parts = domain.split('.')
+        if len(domain_parts) < 2:
+            return False, "Invalid email format"
+
+        # Check for suspicious patterns in email (potential injection)
+        suspicious_patterns = ['--', ';', "'", '"', 'DROP', 'SELECT', 'INSERT', 'UPDATE', 'DELETE']
+        for pattern in suspicious_patterns:
+            if pattern.lower() in email.lower():
+                return False, "Invalid email format"
+
         return True, ""
 
     @classmethod

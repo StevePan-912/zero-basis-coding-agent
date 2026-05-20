@@ -482,3 +482,96 @@ class TestIntegration:
         response = client.get('/api/mode/current', headers=headers1)
         data = json.loads(response.data)
         assert data['current_mode'] == 'practical'
+
+
+class TestCacheEndpoints:
+    """Tests for cache management endpoints."""
+
+    def test_cache_stats_requires_jwt(self, client):
+        """Test that cache stats endpoint requires JWT authentication."""
+        response = client.get('/api/cache/stats')
+
+        assert response.status_code == 401
+
+    def test_cache_stats_success(self, client, auth_token):
+        """Test successful cache stats retrieval."""
+        headers = {'Authorization': f'Bearer {auth_token}'}
+
+        response = client.get('/api/cache/stats', headers=headers)
+
+        assert response.status_code == 200
+        data = json.loads(response.data)
+        assert data['success'] is True
+        assert 'stats' in data
+        assert 'total_entries' in data['stats']
+        assert 'hits' in data['stats']
+        assert 'misses' in data['stats']
+        assert 'hit_rate' in data['stats']
+
+    def test_cache_clear_requires_jwt(self, client):
+        """Test that cache clear endpoint requires JWT authentication."""
+        response = client.post('/api/cache/clear')
+
+        assert response.status_code == 401
+
+    def test_cache_clear_success(self, client, auth_token):
+        """Test successful cache clear."""
+        headers = {'Authorization': f'Bearer {auth_token}'}
+
+        response = client.post('/api/cache/clear', headers=headers)
+
+        assert response.status_code == 200
+        data = json.loads(response.data)
+        assert data['success'] is True
+
+    def test_cache_clear_expired_requires_jwt(self, client):
+        """Test that cache clear expired endpoint requires JWT authentication."""
+        response = client.post('/api/cache/clear-expired')
+
+        assert response.status_code == 401
+
+    def test_cache_clear_expired_success(self, client, auth_token):
+        """Test successful cache expired clear."""
+        headers = {'Authorization': f'Bearer {auth_token}'}
+
+        response = client.post('/api/cache/clear-expired', headers=headers)
+
+        assert response.status_code == 200
+        data = json.loads(response.data)
+        assert data['success'] is True
+
+    def test_chat_with_cached_response(self, client, auth_token):
+        """Test that chat returns cached response on repeated requests."""
+        headers = {'Authorization': f'Bearer {auth_token}'}
+        chat_data = {
+            'message': 'Test caching message'
+        }
+
+        # First request - should not be cached
+        response1 = client.post('/api/chat', json=chat_data, headers=headers)
+        assert response1.status_code == 200
+        data1 = json.loads(response1.data)
+        assert data1['cached'] is False
+
+        # Second identical request - should be cached
+        response2 = client.post('/api/chat', json=chat_data, headers=headers)
+        assert response2.status_code == 200
+        data2 = json.loads(response2.data)
+        assert data2['cached'] is True
+        assert data2['response'] == data1['response']
+
+    def test_cache_hit_rate_after_requests(self, client, auth_token):
+        """Test that cache stats reflect hit rate after requests."""
+        headers = {'Authorization': f'Bearer {auth_token}'}
+
+        # Make a chat request
+        client.post('/api/chat', json={'message': 'Cache test'}, headers=headers)
+
+        # Make same request again (should be cached)
+        client.post('/api/chat', json={'message': 'Cache test'}, headers=headers)
+
+        # Check cache stats
+        response = client.get('/api/cache/stats', headers=headers)
+        data = json.loads(response.data)
+        assert data['stats']['hits'] >= 1
+        assert data['stats']['total_entries'] >= 1
